@@ -3,14 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <title>Adivinanzas</title>
+<link rel="stylesheet" href="estilo.css">
 <style>
 body {
   font-family: Arial, Helvetica, sans-serif;
   background-color: #000000;
+  /* ❌ quitamos flex del body */
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.titulo {
+  margin: 20px 0;
+  color: white; 
+}
+
+.layout {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.angie-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.angie {
+  width: 250px; /* puedes ajustar */
+  height: auto;
 }
 
 .quiz-container {
@@ -74,14 +98,21 @@ button:hover {
 </style>
 </head>
 <body>
+  <h1 class="titulo">Ayuda a Angie a resolver las adivinanzas</h1>
 
-<div class="quiz-container">
-   <div class="counter" id="counter">Pregunta 1/4</div>
-   <h1>Adivinanzas</h1>
-   <div class="question" id="question"></div>
-   <ul class="options" id="options"></ul>
-   <div class="result" id="result"></div>
-</div>
+  <div class="layout"> <!-- agregado -->
+    <div class="angie-container">
+      <img src="Imágenes/Angie1.png" alt="Angie" class="angie">
+    </div>
+
+    <div class="quiz-container">
+       <div class="counter" id="counter">Pregunta 1/4</div>
+       <h1>Adivinanzas</h1>
+       <div class="question" id="question"></div>
+       <ul class="options" id="options"></ul>
+       <div class="result" id="result"></div>
+    </div>
+  </div> <!-- agregado cierre layout -->
 
 <script>
 const preguntas = [
@@ -107,6 +138,15 @@ const preguntas = [
   }
 ];
 
+function shuffle(array) {
+for (let i = array.length - 1; i > 0; i--) {
+const j = Math.floor(Math.random() * (i + 1));
+[array[i], array[j]] = [array[j], array[i]];
+}
+return array;
+}
+shuffle(preguntas);
+
 let preguntaActual = 0; 
 let puntaje = 0;
 
@@ -117,15 +157,22 @@ const resultEl = document.getElementById("result");
 
 function mostrarPregunta() {
   const q = preguntas[preguntaActual];
+
+  const opcionesBarajadas = q.opciones.map((opcion, index) => ({
+texto: opcion,
+indexOriginal: index
+  }));
+  shuffle(opcionesBarajadas);
+
   questionEl.textContent = q.pregunta;
   optionsEl.innerHTML = "";
   counterEl.textContent = `Pregunta ${preguntaActual + 1}/${preguntas.length}`;
 
-  q.opciones.forEach((opcion, index) => {
+  opcionesBarajadas.forEach(op => {
     const li = document.createElement("li");
     const button = document.createElement("button");
-    button.textContent = opcion;
-    button.onclick = () => verificarRespuesta(index);
+    button.textContent = op.texto;
+    button.onclick = () => verificarRespuesta(op.indexOriginal);
     li.appendChild(button);
     optionsEl.appendChild(li);
   });
